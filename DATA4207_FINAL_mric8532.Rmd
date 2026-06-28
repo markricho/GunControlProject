@@ -1,0 +1,1045 @@
+---
+title: "What factors explain support for gun control in the United States?"
+author: 530618133
+output: 
+  pdf_document:
+    keep_tex: true
+header-includes:
+  - \usepackage{float}
+  - \let\origfigure\figure
+  - \let\endorigfigure\endfigure
+  - \renewenvironment{figure}[1][2]{\origfigure[H]}{\endorigfigure}
+date: "2026-06-04"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 4,
+  fig.align = "center",
+  dpi = 300,
+  out.width = "70%"
+)
+
+options(tinytex.verbose = FALSE)
+knitr::opts_chunk$set(crop = NULL)
+knitr::opts_knit$set(root.dir = getwd())
+
+set.seed(4207)
+```
+
+# Introduction
+This research aims to answer the above question through exploring hypothesized variables and creating models for predictability.
+
+Motivation for this topic stems from gaining insight into gun views in the US; a very polarizing issue with significant consequences. This research can inform where some of the sources of this polarization are and add context and insight for citizens and policy makers.
+
+## Hypothesis
+Democrats are hypothesized to be more likely to support gun control than Republicans (moderate-strong effect) and Independents (little-no effect).
+
+Non-white people are hypothesized to be more likely to favour gun control than white people (moderate-strong effect).
+
+Females are hypothesized to be more likely to favour gun control (weak-moderate effect).
+
+Individuals with a higher education level are hypothesized to be more likely to support gun control (weak-moderate effect).
+
+Lower ages are hypothesized to be more likely to support gun control (weak-moderate effect).
+
+People in regions with more mortalities are hypothesized to be more inclined to support gun control (weak effect).
+
+# Literature and Theory
+My theory of differing gun control views on political party is based on value differences. Sheldon (2009) discusses these differences they found in a study of party leaders, where Democratic participants, compared to Republicans, were more likely to value helping needy others and cooperate, whereas Republicans are more likely to focus on personal gain. Furthermore, Waltz (2019) conducted experiments that demonstrated not only are Democrats more cooperative, but exhibit universalism compared to conservatives who tend to exhibit parochialism. Thus, due to research backing Democrats valuing helping others more than Republicans, more willingness to cooperate, and association with universalism, it is envisaged they will be more likely to value gun control. However as Independents and Democrats likely have far more alignment, Democrats-Independents projected to be have little-no strength.
+
+Furthermore, I hypothesized race will be a significant predictor due to the fact that black people are disproportionately affected by gun assaults, and likely feel there need to be further impositions to make for safer communities. Kaufman et al. (2024) explains that roughly 300 15-34 year old black people were assaulted per 100,000 in 2024 compared to the overall average 60 for all races. Long (2019) provides another key issue impacting the community, discussing how "the spread of gun violence in African-American communities is creating everlasting effects on early childhood development" referencing how many African-American children are living in economically disadvantaged communities, potentially leading to exposure to firearms, gun violence, and community violence. Given these impacts in terms of assaults and childhood development effects, it makes sense this community will want to take more urgent protection measures than other races. 
+
+Gender was hypothesized to be a moderately strong predictor with females more likely to be in support of gun control due to wanting more protection. This stance is backed by the finding of Crifasi et. al (2021) whose results suggested women fear crime more than men whereas Carlson (2015) finds that "men view guns as a means of dealing with the threat of crime". Furthermore, according to Carlson (2015) it is implied ownership particularly involves men protecting women (and children) rather than the other way round. This evidences there is likely some variation in the gun control debate in terms of gender where men likely see ownership as necessary and are likely to favour gun rights whilst women are more likely to favour gun control due predominantly to security threats. However, I don't predict these stances to be stronger than party or race (weak-moderate effect).
+
+I felt higher education is likely to be a moderately strong predictor. This is because more education I think on average could bring more insight into the issues surrounding guns in the US and universities are cooperative, democratic environments. Cennett et al (2012) suggests this, alluding to recent research showing American universities being primarily liberal, with 72% of professors being liberal in their study. Furthermore, in Pew Research Center (2016), highly educated adults are far more likely than those with less education to take predominantly liberal positions. Overall it seems higher education will both provide a source of understanding, and with this liberal connection, a bias towards fostered collective effort making gun-control support more likely. Again weaker than party or race.
+
+I felt age would be a strong predictor because of predominant youth social media use leading to greater exposure on average. Keum et al. (2025) claims the distinctive features of social media likely "exacerbate and uniquely intensify the negative repercussions of violence exposure", and explains how violence on social media may be more "immediate, relatable, and emotionally resonant". According to Pew Research Centre (2024) the highest proportion of those who watch arguably the most exposed media (aggressive algorithmic amplification) TikTok, Instagram, YouTube X (formerly Twitter) are all ages 18-29, followed by 30-49, and then 50-65. Given pervasive media exposure for the youth to gun violence it logically follows that there will be more awareness and support for gun control. Again, weaker than party or race.
+
+I felt regional firearm mortalities would be a weak but still valid predictor. This was because those who witness the damage will want to control the cycle. The impact is clear, yet many states are not implementing the regulations required for change, with Kaplan & Geling (1998) demonstrating the GSS data of how there are stark differences between US regions such as East South Central having 70% of households with firearms compared to New England with 38.6%. Considering students who reported knowing a victim of gun crime were 1.40 times more likely to favour stricter gun control policies at schools (Kruis et. al, 2020) I imagine a similar phenomenon to occur with people in regions in general with those regions with higher firearm mortalities to have more support for gun control. However, due to large region sizes and subsequent interregional variations the effect is projected to be weak.
+
+Taken together, these studies suggest there is a theoretical backing that demographic factors, value systems, and exposure all contribute to gun control attitudes, providing a backing for the analysis to come.
+
+# Data and Exploratory Analysis
+## About Data
+Data is from the US National Data Program for  Social Sciences between 1972 and 2016. There were 62,466 completed interviews and 6108 variables examined. A permanent core is asked, and certain questions vary annually, i.e, gun control views from 2006. I believe there will be systematic biases particularly in terms of frame error (only those with priviledge/access carry out the survey); EDA will reveal observable imbalances and I will adjust accordingly.
+
+I also merged a dataset from the CDC Wonder Online Database which included a variable on the number of firearm mortalities per 100,000 people for the states, which I have later converted to regions and merged based on the regions variable in both datasets.
+
+All gun control data was from 2006, so time isn't a potential confounder here. After my dataset merge, I ensured only all 2005 data from CDC wonder was included so timeframe does not confound results. In addition, while question selection is supposedly monitored by leading social scientists, some questions seem to contribute to questionnaire and social-desirability bias for instance "In all states it is illegal to drive while under the influence of alcohol. Would you favor or oppose state laws making it illegal to carry a firearm while under the influence of alcohol?", so question choice will be deeply considered to minimize this bias. 
+
+# Method 
+
+## Data Cleaning
+
+### Transformations
+There were certain procedures required where I needed to transform variables. One was converting education to a binary variable, drawing the line at Bachelor+, another was grouping based on political parties rather than strength, also, grouping race into black/white due to the context of my study and insufficient sample size of "other", and grouping regional death rates into three levels based on regions to extract value.
+
+### Variable Choices
+My literature review seemed to suggest my predictors would be useful, so I will be using those variables (political views, race, gender, education level, age and regional firearm mortalities) as my dependent variables to predict gun-control support. 
+
+Given there were no perceivable limits to the factors supporting gun control, there was no real need to implement controls that weren't already covered by predictors; the six independent variables I have chosen simultaneously prevent respective confounding.
+
+**Factor Analysis**
+
+A problem faced with my dependent variable gun control, was that it seemed latent in the sense that no variables I could see in the study directly asked on people’s views on gun control, however there were many questions that suggested gun-control support that I found. Thus, I implemented factor analysis to amalgamate all related variables into one gun-control support variable to measure (variables in appendix). I felt this was a strong method to get a clear idea of views around the issue but the weakness is clearly failing to definitively suggest gun-control support views, questionnaire bias can obscure results, and I carry my biases in choosing questions.
+
+### Missing Data
+Once I had loaded in all data and merged the additional dataset death_rate variable, there was just 0.1% missing data so I simply removed it.
+
+## EDA
+EDA involved visualising individual variables alongside their relation to gun control. A class imbalance for the dependent variable was highlighted during EDA encouraging Kappa to be used alongside accuracy as it better accounts for class imbalance. Otherwise, trends were revealed, giving insight before modeling.
+
+## Analysis Approach
+Analysis involved maps to visually see the impact of chosen factors on gun control. While maps are good visualizers, regions are quite large, and it is hard to quantify variables, and directly derive gun-control support, so I also used two logistic regression models to achieve this. 
+
+Logistic Regression was chosen given the context of the binary gun-control support variable. The first model is described below as "basic" whereby it just amalgamates all factors, and the second uses the AIC stepwise technique. While logistic regression is an effective model for binary data, it has no interaction tracking between variables so EDA will be done beforehand. Furthermore it is very simple, creating a decision boundary which is why I've combined it with EDA, maps and literature for further exploration. 
+
+I chose AIC stepwise for model two as it balances goodness-of-fit with model complexity. A potential weakness that has been noted for this method is overfitting and biased estimates, so I'm using a full model and evaluating these models thoroughly through validation procedures, i.e, overfitting testing.
+
+### Testing 
+Firstly, I carried out logistic regression assumptions which confirmed I was able to use this method for my dataset. This involved checking for satisfaction of all of linearity with log-odds, multicollinearity, sample size, independence of observations and errors. 
+
+Next, I analysed variables of influence for both models to view what factors explain support for gun control in the US. This helped to ultimately answer my research question. Also, surface level accuracies were found for the in-sample testing such as accuracy, kappa accuracy, pseudo r squared value, and AIC were all evaluated to compare model performance. 
+
+### Validation
+I then carried out validation procedures to ensure my models were both valid and accurate. This involved K-Fold cross-validation, goodness-of-fit testing, Residual analysis, Bootstrap sampling, overfitting testing and chi-squared tests.
+
+```{r, include = FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+packages <- c("haven", "dplyr", "ggplot2", "tidyr", "funModeling", "stringr", 
+              "rpart", "rpart.plot", "caret", "readxl", "psych", "MASS", "sf", 
+              "dplyr", "ggplot2", "tigris", "patchwork", "png", "cowplot", "magick",
+              "insight", "performance", "see", "car", "grid", "ggpubr", "knitr")
+
+# Function provided by CoPilot AI in order to install packages only if necessary. Please see reference section for AI usage in this project.
+
+# -----
+invisible(load_or_install <- function(pkg) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    invisible(
+      suppressWarnings(
+        suppressMessages(
+          capture.output(
+            install.packages(pkg, quiet = TRUE),
+            file = NULL
+          )
+        )
+      )
+    )
+  }
+  suppressPackageStartupMessages(
+    library(pkg, character.only = TRUE)
+  )
+})
+
+invisible(for (x in packages) {
+  load_or_install(x)
+})
+# -----
+```
+
+```{r, include = FALSE}
+social_surveys_data <- read_sav("data/GSS7216_R3.sav")
+firearm_data <- read.csv("data/firearm-data.csv")
+```
+
+```{r, include = FALSE}
+condensed_data <- social_surveys_data %>% dplyr::select(GUNS911, GUNLAW, HGUNLAW, GUNSALES, PARTYID, SEX, AGE, RACE, REG16, DEGREE, GUNSDRUG, GUNSDRNK, GUNLAW, HGUNLAW, SEMIGUNS, RIFLES50)
+```
+
+```{r, include = FALSE}
+condensed_data <- condensed_data %>% mutate(post_911_gun_control_stricter = case_match(GUNS911, 1 ~ 2, 2 ~ 1, c(8, 9, 0) ~ NA, .default = GUNS911),
+  gun_sales = case_match(GUNSALES, 1 ~ 5, 2 ~ 4, 5 ~ 1, 4 ~ 2, c(8, 9, 0) ~ NA, .default = GUNSALES),
+  guns_penalty_harsher_drugs = case_match(GUNSDRUG, 1 ~ 3, 2 ~ 1, 3 ~ 2, c(8, 9, 0) ~ NA, .default = GUNSDRUG),
+  illegal_guns_alcohol = case_match(GUNSDRNK, 1 ~ 2, 2 ~ 1, c(8, 9, 0) ~ NA, .default = GUNSDRNK), favour_permit = case_match(GUNLAW, 1 ~ 2, 2 ~ 1, c(8, 9, 0) ~ NA, .default = GUNLAW), semi_guns_policed = case_match(SEMIGUNS, c(8, 9, 0) ~ NA, .default = SEMIGUNS), rifles_policed = case_match(RIFLES50, 1 ~ 2, 2 ~ 1, c(8, 9, 0) ~ NA, .default = RIFLES50))
+
+fa.fit <- fa(condensed_data[,c("post_911_gun_control_stricter","gun_sales","guns_penalty_harsher_drugs","illegal_guns_alcohol","favour_permit","semi_guns_policed","rifles_policed")], 
+             nfactors=1)
+
+condensed_data$gun_control_support <- as.numeric(fa.fit$scores)
+
+condensed_data <- condensed_data %>% dplyr::select(PARTYID, SEX, AGE, RACE, REG16, DEGREE, gun_control_support)
+```
+
+```{r, include = FALSE}
+# Recode DEGREE
+if ("DEGREE" %in% names(condensed_data)) {
+  condensed_data$education <- factor(condensed_data$DEGREE,
+                               levels = c(0,1,2,3,4),
+                               labels = c("Less than High School", "High School", "Associate/Junior College", "Bachelors", "Graduate"))
+  condensed_data$DEGREE <- NULL
+}
+
+# Recode REG16
+if ("REG16" %in% names(condensed_data)) {
+  condensed_data$region <- factor(condensed_data$REG16,
+                               levels = c(1,2,3,4,5,6,7,8,9,0),
+                               labels = c("New England", "Middle Atlantic", "East North Central", "West North Central", "South Atlantic", "East South Central", "West South Central", "Mountain", "Pacific", "Foreign"))
+  condensed_data$REG16 <- NULL
+}
+
+# Recode SEX
+if ("SEX" %in% names(condensed_data)) {
+  condensed_data$sex <- factor(condensed_data$SEX,
+                               levels = c(1, 2),
+                               labels = c("Male", "Female"))
+  condensed_data$SEX <- NULL
+}
+
+# Recode PARTYID
+if ("PARTYID" %in% names(condensed_data)) {
+  condensed_data$party <- factor(condensed_data$PARTYID,
+                                 levels = c(0,1,2,3,4,5,6),
+                                 labels = c("Strong Democrat", "Moderate Democrat", "Weak Democrat",
+                                            "Centre", "Weak Republican", "Moderate Republican",
+                                            "Strong Republican"))
+  condensed_data$PARTYID <- NULL
+}
+
+# Recode RACE
+if ("RACE" %in% names(condensed_data)) {
+  condensed_data$race_type <- factor(condensed_data$RACE,
+                                levels = c(1, 2),
+                                labels = c("White", "Black"))
+  condensed_data$RACE <- NULL
+}
+
+# Recode AGE
+if ("AGE" %in% names(condensed_data)) {
+  condensed_data$age <- condensed_data$AGE
+  condensed_data$AGE <- NULL
+}
+```
+
+```{r, include = FALSE}
+firearm_data <- firearm_data %>% 
+  mutate(
+    region = case_when(
+      Location %in% c("ME", "VT", "NH", "MA", "CT", "RI") ~ "New England",
+      Location %in% c("NY", "NJ", "PA") ~ "Middle Atlantic",
+      Location %in% c("WI", "IL", "IN", "MI", "OH") ~ "East North Central",
+      Location %in% c("MN", "IA", "MO", "ND", "SD", "NE", "KS") ~ "West North Central",
+      Location %in% c("DE", "MD", "WV", "VA", "NC", "SC", "GA", "FL", "District of Columbia") ~ "South Atlantic",
+      Location %in% c("KY", "TN", "AL", "MS") ~ "East South Central",
+      Location %in% c("AR", "OK", "LA", "TX") ~ "West South Central",
+      Location %in% c("MT", "ID", "WY", "NV", "UT", "CO", "AZ", "NM") ~ "Mountain",
+      Location %in% c("WA", "OR", "CA", "AK", "HI") ~ "Pacific",
+      TRUE ~ "Foreign"
+    )
+  )
+
+firearm_data <- firearm_data[firearm_data$YEAR == 2005, ]
+
+dx <- firearm_data %>% group_by(region) %>% summarise(death_rate = mean(Death.Rate))
+
+condensed_data <- merge(condensed_data, dx, by = "region")
+```
+
+```{r, include = FALSE}
+gun_control_lr_data <- condensed_data %>% drop_na(gun_control_support)
+
+gun_control_lr_data <- gun_control_lr_data %>% 
+  mutate(
+    gun_control_support_num = case_when(
+      gun_control_support < 0 ~ 0,
+      TRUE ~ 1
+    )
+  )
+
+gun_control_lr_data$death_rate <- cut(
+  gun_control_lr_data$death_rate,
+  breaks = c(-Inf, 9, 13, Inf),
+  labels = c("Low mortality", "Medium mortality", "High mortality")
+)
+
+gun_control_lr_data <- gun_control_lr_data %>% 
+  mutate(
+    death_rate_values = case_when(
+      death_rate == "Low mortality" ~ 0,
+      death_rate == "Medium mortality" ~ 0.5,
+      TRUE ~ 1
+    )
+  )
+
+gun_control_lr_data <- gun_control_lr_data %>% 
+  mutate(
+    education_type = case_when(
+      education %in% c("Less than High School", "High School", "Associate/Junior College") ~ "Low Ed",
+      TRUE ~ "High Ed"
+    )
+  )
+
+gun_control_lr_data <- gun_control_lr_data %>% 
+  mutate(
+    party_type_cat = case_when(
+      party %in% c("Moderate Republican", "Strong Republican", "Weak Republican") ~ "Rep",
+      party == "Centre" ~ "Ind",
+      TRUE ~ "Dem"
+    )
+  )
+
+# These are temporarily here to include for map variable, removed in next code chunk
+gun_control_lr_data <- gun_control_lr_data %>% 
+  mutate(
+    party_type = case_when(
+      party == "Strong Republican" ~ 0,
+      party == "Moderate Republican" ~ 1/6,
+      party == "Weak Republican" ~ 2/6,
+      party == "Centre" ~ 3/6,
+      party == "Weak Democrat" ~ 4/6,
+      party == "Moderate Democrat" ~ 5/6,
+      TRUE ~ 1
+    )
+  )
+# ----
+
+# Standard variable mapping
+gun_control_lr_data$race_type <- as_factor(gun_control_lr_data$race_type)
+gun_control_lr_data$sex <- as_factor(gun_control_lr_data$sex)
+gun_control_lr_data$education_type <- as_factor(gun_control_lr_data$education_type)
+gun_control_lr_data$party_type_cat <- as_factor(gun_control_lr_data$party_type_cat)
+gun_control_lr_data$gun_control_support <- as_factor(gun_control_lr_data$gun_control_support_num)
+gun_control_lr_data <- gun_control_lr_data %>% dplyr::select(gun_control_support, gun_control_support_num, sex, party_type_cat, race_type, education_type, age, death_rate, region, party_type, death_rate_values)
+```
+
+```{r, include = FALSE}
+gun_control_map <- gun_control_lr_data %>% dplyr::select(region, gun_control_support_num, sex, party_type, age, death_rate_values, race_type, education_type)
+gun_control_lr_data <- gun_control_lr_data %>% dplyr::select(gun_control_support, sex, party_type_cat, age, death_rate, race_type, education_type, region)
+```
+
+```{r, include = FALSE}
+visdat::vis_miss(gun_control_lr_data, warn_large_data = FALSE) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 6),
+    plot.margin = margin(t = 10, r = 10, b = 80, l = 10)  # <-- key line
+  )
+
+gun_control_lr_data <- na.omit(gun_control_lr_data)
+gun_control_map <- na.omit(gun_control_map)
+```
+
+# EDA
+```{r, fig.cap="Visualising Individual Variables", echo=FALSE}
+r <- theme(
+  axis.text.x = element_text(size = 6, angle = 90, vjust = 0.5, hjust = 1),
+  axis.text.y = element_text(size = 6),
+  axis.title = element_text(size = 7),
+  plot.title = element_text(size = 6)
+)
+
+p1 <- ggplot(gun_control_lr_data, aes(x=age)) + geom_histogram(bins=15) + ylab("Count") + ggtitle("Ages of Respondents") + r
+p2 <- ggplot(gun_control_lr_data, aes(x=gun_control_support)) + geom_bar() + ylab("Count") + ggtitle("Gun-control support of Respondents") + xlab("Support (0-Oppose, 1-Support)") + r
+p3 <- ggplot(gun_control_lr_data, aes(x=sex)) + geom_bar() + ylab("Count") + ggtitle("Sex of Respondents") + xlab("Sex") + r
+p4 <- ggplot(gun_control_lr_data, aes(x=party_type_cat)) + geom_bar() + ylab("Count") + ggtitle("Supported Party of Respondents") + xlab("Party") + r
+p5 <- ggplot(gun_control_lr_data, aes(x=death_rate)) + geom_bar() + ylab("Count") + ggtitle("Gun Deaths per 100k") + xlab("Regional mortality level") + r
+p6 <- ggplot(gun_control_lr_data, aes(x=race_type)) + geom_bar() + ylab("Count") + ggtitle("Race of Respondents") + xlab("Race") + r
+p7 <- ggplot(gun_control_lr_data, aes(x=education_type)) + geom_bar() + ylab("Count") + ggtitle("Education Level of Respondents") + xlab("Education Type") + r
+p8 <- ggplot(gun_control_lr_data, aes(x=region)) + geom_bar() + ylab("Count") + ggtitle("Region of Respondents") + xlab("Region") + r
+
+p <- ggarrange(
+  p1, p2, p3, p4, p5, p6, p7, p8,
+  ncol = 4, nrow = 2,
+  common.legend = FALSE,
+  legend = "none"
+)
+
+invisible(capture.output(print(p), file = NULL))
+```
+
+Individual visualisations revealed variable imbalances were present, however, for logistic regression independent variables I didn't think any changes were needed. I intend to include kappa figures as they are less sensitive to class imbalances for gun control though.
+
+```{r, fig.cap="Visualising regional data with gun-control support"}
+# Temporarily convert this effectively categorical variable regional death rate to numeric
+gun_control_lr_data$death_rate_num <- as.numeric(gun_control_lr_data$death_rate)
+# Temporarily convert gun control to words
+gun_control_lr_data <- gun_control_lr_data %>%
+  mutate(`Gun Control View` = factor(
+    gun_control_support,
+    levels = c(0, 1),
+    labels = c("Oppose", "Support")
+  ))
+
+plot_regions <- ggplot(gun_control_lr_data, aes(x=region, y=death_rate_num, fill=`Gun Control View`)) + geom_col() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) + ggtitle("Regions of US and Firearm Deaths with Gun-control support Ratings") + xlab("Region") + ylab("Firearm deaths per 100,000") + labs(color = "Gun Control Support Type")
+# Remove variable after visualisation 
+
+plot_regions
+```
+
+The regional bar chart showed varying trends. Some regions having differing attitudes. Predictability is likely.
+
+```{r, include = FALSE}
+p1 <- ggplot(gun_control_lr_data, aes(x = sex, fill=`Gun Control View`)) + ylab("GC Support") + xlab("Sex") +
+  geom_bar(position = "fill") + ggtitle("GC Support by Sex") +
+  theme(legend = "none") 
+```
+
+```{r, include = FALSE}
+p2 <- ggplot(gun_control_lr_data, aes(x = gun_control_support, y = age, fill = `Gun Control View`)) + ylab("Age") + xlab("GC Support") +
+  geom_boxplot() + ggtitle("GC Support by Age") +
+  theme(legend = "none") 
+```
+
+```{r, include = FALSE}
+p3 <- ggplot(gun_control_lr_data, aes(x = party_type_cat, fill=`Gun Control View`)) + ylab("GC Support") + xlab("Party") +
+  geom_bar(position = "fill")  + ggtitle("GC Support by Party") +
+  theme(legend = "none") 
+```
+  
+```{r, include = FALSE}
+p4 <- ggplot(gun_control_lr_data, aes(x = race_type, fill=`Gun Control View`)) + ylab("GC Support") + xlab("Race") +
+  geom_bar(position = "fill")  + ggtitle("GC Support by Race") +
+  theme(legend = "none")
+```
+
+```{r, include = FALSE}
+p5 <- ggplot(gun_control_lr_data, aes(x = education_type, fill=`Gun Control View`)) + ylab("GC Support") + xlab("Education Type") +
+  geom_bar(position = "fill")  + ggtitle("GC Support by Edu Type") +
+  theme(legend = "none") 
+```
+
+```{r, fig.cap="Visualising predictors and gun-control support"}
+layout_matrix <- rbind(c(1, 2, 3),
+                       c(4, 5, NA))
+
+# Arrange the 5 charts
+p <- ggarrange(
+  p1, p2, p3, p4, p5,
+  ncol = 3, nrow = 2,
+  layout_matrix = layout_matrix,
+  font.label = list(size = 3),
+  common.legend = TRUE,
+  legend = "bottom"
+)
+
+gun_control_lr_data <- gun_control_lr_data %>% dplyr::select(gun_control_support, sex, party_type_cat, age, death_rate, race_type, education_type, region) 
+
+print(p)
+```
+
+Sex, party, education and slightly race classes had imbalances but not age. This shows they are likely quite strong predictors, justifying my hypothesis.
+
+```{r, include = FALSE}
+states <- states(cb = TRUE) %>% 
+  st_as_sf() %>% 
+  filter(!STUSPS %in% c("AK", "HI", "PR")) %>% 
+  mutate(region = case_when(
+    # 1. New England
+    STUSPS %in% c("ME","NH","VT","MA","RI","CT") ~ "New England",
+    
+    # 2. Middle Atlantic
+    STUSPS %in% c("NY","NJ","PA") ~ "Middle Atlantic",
+    
+    # 3. East North Central
+    STUSPS %in% c("OH","IN","IL","MI","WI") ~ "East North Central",
+    
+    # 4. West North Central
+    STUSPS %in% c("MN","IA","MO","ND","SD","NE","KS") ~ "West North Central",
+    
+    # 5. South Atlantic
+    STUSPS %in% c("DE","MD","DC","VA","WV","NC","SC","GA","FL") ~ "South Atlantic",
+    
+    # 6. East South Central
+    STUSPS %in% c("KY","TN","MS","AL") ~ "East South Central",
+    
+    # 7. West South Central
+    STUSPS %in% c("AR","LA","OK","TX") ~ "West South Central",
+    
+    # 8. Mountain
+    STUSPS %in% c("MT","ID","WY","CO","NM","AZ","UT","NV") ~ "Mountain",
+    
+    # 9. Pacific
+    STUSPS %in% c("WA","OR","CA") ~ "Pacific",
+    
+    TRUE ~ NA_character_
+  ))
+
+regions_sf <- states %>% 
+  group_by(region) %>% 
+  summarise(geometry = st_union(geometry))
+```
+
+```{r, include = FALSE}
+my_region_data <- gun_control_map %>% 
+  group_by(region) %>% 
+  summarise(
+    death_rate = mean(death_rate_values, na.rm = TRUE),
+    gun_control_support = mean(gun_control_support_num, na.rm = TRUE),
+    political_mean = mean(party_type, na.rm = TRUE),
+    female_proportion = sum(sex == "Female") / length(sex),
+    high_education_proportion = sum(education_type == "High Ed") / length(education_type),
+    age_average = mean(age, na.rm = TRUE),
+    black_proportion = sum(race_type == "Black") / length(race_type) * 100,
+  )
+
+map_data <- regions_sf %>% 
+  left_join(my_region_data, by = "region")
+
+fill_type <- c(
+  "political_mean", 
+  "high_education_proportion", 
+  "female_proportion", 
+  "death_rate", 
+  "age_average", 
+  "black_proportion", 
+  "gun_control_support"
+)
+
+titles <- c(
+  "Regional Political Party", 
+  "Regional Higher Education Proportion", 
+  "Regional Female Percentage by Region", 
+  "Regional Firearm Mortality 2006 (per 100k)", 
+  "Regional Age Average", 
+  "Regional Black-White %", 
+  "Regional Gun-control support"
+)
+
+fill_labels <- c("Party", "Proportion of Bachelor+", "% Females", "Mortalities per 100k people", "Age Average", "Black-White %", "Support Level Average")
+
+plots <- list()
+
+for (n in 1:6) {
+  p <- ggplot(map_data) +
+    geom_sf(aes(fill = .data[[fill_type[n]]]), color = "white", size = 0.4) +
+    labs(
+      title = titles[n],
+      fill = fill_labels[n]
+    ) +
+theme(
+  panel.grid   = element_blank(),
+  axis.text    = element_blank(),
+  axis.title   = element_blank(),
+  plot.margin  = margin(5, 5, 5, 5),         
+  plot.title   = element_text(size = 18),      
+  legend.position = "right",
+  legend.key.size = unit(0.4, "cm"),        
+  legend.text  = element_text(size = 12),
+  legend.title = element_text(size = 13)
+) +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE)
+  
+  plots[[length(plots) + 1]] <- p
+}
+
+save_fixed_panel <- function(plot, path, panel_width = 7, panel_height = 5, dpi = 150) {
+  g <- ggplotGrob(plot)
+  
+  # Force the panel (map area) to a fixed size
+  panels <- which(g$layout$name == "panel")
+  g$widths[unique(g$layout$l[panels])]  <- unit(panel_width, "in")
+  g$heights[unique(g$layout$t[panels])] <- unit(panel_height, "in")
+  
+  # Total figure size = panel + whatever margins/legend are around it
+  width_in  <- convertWidth(sum(g$widths),   "in", valueOnly = TRUE)
+  height_in <- convertHeight(sum(g$heights), "in", valueOnly = TRUE)
+  
+  png(path, width = width_in, height = height_in, units = "in", res = dpi)
+  grid.draw(g)
+  dev.off()
+}
+
+tmp_files <- lapply(seq_along(plots), function(i) {
+  tmp <- tempfile(fileext = ".png")
+  save_fixed_panel(plots[[i]], tmp, panel_width = 7, panel_height = 5)
+  tmp
+})
+
+imgs <- lapply(tmp_files, image_read)
+
+# Crop all to same height so rows align cleanly
+target_height <- min(sapply(imgs, function(img) image_info(img)$height))
+imgs <- lapply(imgs, function(img) image_crop(img, paste0(image_info(img)$width, "x", target_height, "+0+0")))
+
+rows <- list()
+idx <- seq(1, length(imgs), by = 3)
+for (i in idx) {
+  group <- imgs[i:min(i + 2, length(imgs))]
+  row <- image_append(do.call(c, group), stack = FALSE)
+  rows[[length(rows) + 1]] <- row
+}
+
+combined <- image_append(do.call(c, rows), stack = TRUE)
+image_write(combined, "combined_maps.png")
+```
+
+```{r, fig.cap="Map of US Regions gun-control support"}
+  p <- ggplot(map_data) +
+    geom_sf(aes(fill = .data[[fill_type[7]]]), color = "white", size = 0.4) +
+    labs(
+      title = titles[7],
+      fill = fill_labels[7]
+    ) +
+theme(
+  panel.grid   = element_blank(),
+  axis.text    = element_blank(),
+  axis.title   = element_blank(),
+  plot.margin  = margin(5, 5, 5, 5),          
+  plot.title   = element_text(size = 9),      
+  legend.position = "right",
+  legend.key.size = unit(0.4, "cm"),          
+  legend.text  = element_text(size = 7),
+  legend.title = element_text(size = 8)
+) +
+  coord_sf(xlim = c(-125, -66), ylim = c(24, 50), expand = FALSE)
+  
+print(p)
+```
+
+```{r, fig.cap="Maps of US regions proportions of predictors"}
+knitr::include_graphics("combined_maps.png")
+```
+
+The maps show regionally gun-control support only seems to correlate with sex, education and partially age. Particularly a higher female proportion, higher education and interestingly older average age.
+
+## Testing 
+
+### Assumptions
+
+**Linearity with Log-Odds**
+
+```{r, fig.cap="Linearity with Log-Odds graph"}
+basic_model <- glm(gun_control_support ~ sex + party_type_cat + race_type + education_type + age + death_rate,
+             data=gun_control_lr_data,
+              family = binomial)
+
+model_df <- basic_model$model %>% 
+  mutate(
+    logit = predict(basic_model, type = "link")
+  )
+
+numeric_predictors <- c("age")
+
+mydata <- model_df %>%
+  dplyr::select(all_of(numeric_predictors), logit) %>%
+  gather(key = "predictors", value = "predictor.value", -logit)
+
+p <- ggplot(mydata, aes(logit, predictor.value)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  geom_smooth(method = "loess") +
+  theme_bw() +
+  facet_wrap(~predictors, scales = "free_y")
+
+print(p)
+```
+
+Age satisfies linearity with a straight line. No adjustments are needed here.
+
+**Multicollinearity**
+
+```{r}
+vif <- vif(basic_model)
+
+kable(
+  round(vif, 3),
+  caption = "Variance Inflation Factors (Rounded to 3 Decimals)"
+)
+```
+
+I conducted VIF to observe multicollinearity. All VIF readings rounded to 1 indicating none.
+
+**Sample Size**
+
+```{r}
+kable(
+  data.frame(
+    SampleSize = dim(gun_control_lr_data)[1]), 
+    caption = "Sample Size")
+```
+
+I am satisfied with the sample size to carry out logistic regression models.
+
+**Independence of Observations**
+
+Individual surveys were carried out without influence of others so I am satisfied.
+
+**Independence of Errors**
+
+There are no patterns for residuals here so assumption is satisfied.
+
+```{r, fig.cap="Residuals of Basic Model"}
+res <- residuals(basic_model, type = "pearson")
+
+# Plot against row numbers / collection order
+plot(res, type = "p", main = "Residuals by Order of Data", 
+     xlab = "Row Number", ylab = "Pearson Residuals")
+abline(h = 0, col = "red", lty = 2)
+```
+
+### Model Analysis
+
+```{r, include = FALSE}
+gun_control_lr_data <- na.omit(gun_control_lr_data)
+```
+
+```{r, include = FALSE}
+null_model <- glm(gun_control_support ~ 1,
+             data=gun_control_lr_data,
+              family = binomial)
+```
+
+**Basic Model**
+
+```{r}
+kable(
+  data.frame(Model = deparse(formula(basic_model))),
+  caption = "Basic Model Formula"
+)
+```
+
+```{r}
+basic_model <- glm(gun_control_support ~ sex + party_type_cat + race_type + education_type + age + death_rate,
+             data=gun_control_lr_data,
+              family = binomial)
+
+p <- data.frame(
+  p_value = round(summary(basic_model)$coefficients[, "Pr(>|z|)"], 3)
+)
+
+kable(p, caption = "Basic Model Variable Analysis")
+```
+
+The basic model seems to have variable significance for sex, party type, and education as p-values are less than 0.05. Other variables don't appear to show significance here. While the Independent to Democrat differences are significant however, Republicans are not. 
+
+**Stepwise Model**
+
+```{r}
+# Had to omit na's to carry out the step model
+
+step_model <- glm(gun_control_support ~ sex + party_type_cat + race_type + education_type + age + death_rate, family = binomial, 
+   data = gun_control_lr_data)
+
+# Stepwise regression model
+step_model <- stepAIC(basic_model, direction = "both", 
+                      trace = FALSE)
+
+p <- data.frame(
+  p_value = round(summary(step_model)$coefficients[, "Pr(>|z|)"], 3)
+)
+```
+
+```{r}
+kable(
+  data.frame(Model = deparse(formula(step_model))), caption = "Stepwise Model")
+```
+
+```{r}
+kable(p, caption = "Stepwise Model Variable Analysis")
+```
+
+Unsurprisingly, variables that were selected for were those significant ones in the basic model. Despite Republican-Democrats being insignificant, the Independents-Democrats was too influential so party category was included.
+
+## Validation
+### Training Accuracy
+
+```{r}
+pseudo_r2 <- function(model) {
+  1 - (as.numeric(logLik(model)) / as.numeric(logLik(update(model, . ~ 1))))
+}
+
+truth <- factor(gun_control_lr_data$gun_control_support, levels = c(0, 1))
+
+pred0 <- ifelse(predict(null_model, type = "response") > 0.5, 1, 0)
+pred1 <- ifelse(predict(basic_model, type = "response") > 0.5, 1, 0)
+pred2 <- ifelse(predict(step_model, type = "response") > 0.5, 1, 0)
+
+acc0 <- mean(pred0 == gun_control_lr_data$gun_control_support)
+acc1 <- mean(pred1 == gun_control_lr_data$gun_control_support)
+acc2 <- mean(pred2 == gun_control_lr_data$gun_control_support)
+
+pred0_f <- factor(pred0, levels = c(0, 1))
+pred1_f <- factor(pred1, levels = c(0, 1))
+pred2_f <- factor(pred2, levels = c(0, 1))
+
+kappa0 <- confusionMatrix(pred0_f, truth)$overall["Kappa"]
+kappa1 <- confusionMatrix(pred1_f, truth)$overall["Kappa"]
+kappa2 <- confusionMatrix(pred2_f, truth)$overall["Kappa"]
+
+d <- data.frame(
+  Model = c("Null", "Basic", "Stepwise"),
+  AIC = c(AIC(null_model), AIC(basic_model), AIC(step_model)),
+  Pseudo_R2 = c(NA, pseudo_r2(basic_model), pseudo_r2(step_model)),
+  Training_Accuracy = c(acc0, acc1, acc2),
+  Training_Kappa = c(kappa0, kappa1, kappa2)
+)
+
+d[, sapply(d, is.numeric)] <- lapply(d[, sapply(d, is.numeric)], round, digits = 3)
+
+kable(d, caption = "Training Accuracy Model Analysis")
+```
+
+The basic model AIC is lower than the chance model but the stepwise model is lowest indicating best model-fit. However, the basic model actually has better predictability of gun-control support with a higher pseudo r-squared, training accuracy, and training kappa.
+
+### Cross-validation testing
+
+```{r}
+cv_control <- trainControl(method = "cv", number = 10)
+
+cv_model_basic <- caret::train(
+  gun_control_support ~ sex + party_type_cat + education_type, 
+  data = gun_control_lr_data, 
+  method = "glm", 
+  family = "binomial", 
+  trControl = cv_control
+)
+
+cv_model_step <- caret::train(
+  gun_control_support ~ sex + party_type_cat + race_type + education_type + age + death_rate, 
+  data = gun_control_lr_data, 
+  method = "glm", 
+  family = "binomial", 
+  trControl = cv_control
+)
+
+d <- data.frame(
+  Model = c("Basic", "Stepwise"),
+  Accuracy = c(cv_model_basic$results$Accuracy, cv_model_step$results$Accuracy),
+  AccuracySD = c(cv_model_basic$results$AccuracySD, cv_model_step$results$AccuracySD),
+  Kappa = c(cv_model_basic$results$Kappa, cv_model_step$results$Kappa),
+  KappaSD = c(cv_model_basic$results$KappaSD, cv_model_step$results$KappaSD)
+)
+
+d[, sapply(d, is.numeric)] <- lapply(d[, sapply(d, is.numeric)], round, digits = 3)
+
+kable(d, caption = "CV Accuracy Model Analysis")
+```
+
+However, despite less cross-validation accuracy, the stepwise model has superior imbalance-accounting kappa indicating it is better able to predict on unfamiliar data. The standard deviations of the stepwise model are smaller too; it's likely more stable than the basic model. 
+
+### Residual Analysis
+
+```{r, fig.cap="Residuals compared"}
+# First Plot
+par(mfrow = c(1, 2))
+res <- residuals(basic_model, type = "pearson")
+
+
+plot(res, type = "p", main = "Residuals (Basic Model)", 
+     xlab = "Row Number", ylab = "Pearson Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+# Second Plot
+res <- residuals(step_model, type = "pearson")
+
+plot(res, type = "p", main = "Residuals (Step Model)", 
+     xlab = "Row Number", ylab = "Pearson Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+par(mfrow = c(1, 2))
+```
+
+There are no data-fit issues here with no patterns for both, just a general favourability towards gun-control support given the class imbalance.
+
+### Goodness-Of-Fit testing
+
+```{r}
+basic_gf <- performance_hosmer(basic_model, n_bins=5)
+step_gf <- performance_hosmer(step_model, n_bins=5)
+
+p <- data.frame(
+  Model = c("Basic", "Step"),
+  P_Value = c(basic_gf$p.value, step_gf$p.value)
+)
+
+p[, sapply(p, is.numeric)] <- 
+  lapply(p[, sapply(p, is.numeric)], round, digits = 2)
+
+kable(p, caption = "Goodness-Of-Fit Model Analysis")
+```
+
+Both models seem to fit data well using the Hosmer-Lemeshow Goodness-Of-Fitness test. This means the predicted and observed rates don't have a significant difference. 
+
+### Bootstrap Sampling
+**Basic Model**
+
+```{r}
+boot_fn_basic <- function(data, index) {
+  boot_sample <- data[index, ]
+  
+  fit <- glm(gun_control_support ~ sex + party_type_cat + education_type + age + death_rate,
+             data = boot_sample, 
+             family = binomial)
+  
+  return(coef(fit))
+  
+  gun_control_lr_data
+}
+
+# 2. Fix the function so it explicitly uses the dynamic 'data' and 'index' arguments
+boot_fn_step <- function(data, index) {
+  # This line MUST use the local 'data' argument, NOT the global dataset name
+  boot_sample <- data[index, ]
+  
+  fit <- glm(gun_control_support ~ sex + party_type_cat + education_type,
+             data = boot_sample, 
+             family = binomial)
+  
+  return(coef(fit))
+}
+
+boot_results_basic <- boot::boot(
+  data = gun_control_lr_data,
+  statistic = boot_fn_basic,
+  R = 500
+)
+
+boot_results_step <- boot::boot(
+  data = gun_control_lr_data,
+  statistic = boot_fn_step,
+  R = 500
+)
+
+boot_to_table <- function(boot_obj) {
+  original   <- boot_obj$t0
+  boot_mean  <- apply(boot_obj$t, 2, mean)
+  boot_sd    <- apply(boot_obj$t, 2, sd)
+  bias       <- original - boot_mean
+  
+  tibble::tibble(
+    term      = names(original),
+    original  = round(original, 3),
+    boot_mean = round(boot_mean, 3),
+    bias      = round(bias, 3),
+    boot_sd   = round(boot_sd, 3)
+  )
+}
+```
+
+```{r}
+tbl_basic <- boot_to_table(boot_results_basic)
+kable(tbl_basic, caption="Bootstrap Basic Model Analysis")
+```
+
+Results for the bootstrapping here indicate a lot of standard error with highly sensitive estimates. Bias is generally quite far from 0 in this indicating some variables give huge errors.
+
+**Stepwise Model**
+
+```{r}
+tbl_step  <- boot_to_table(boot_results_step)
+kable(tbl_step, caption = "Bootstrap Stepwise Model Analysis")
+```
+
+The stepwise model gave more precise estimates of gun control with lower standard error and less bias (closer to 0).
+
+### Overfitting
+
+```{r}
+accuracy <- data.frame(
+  Model = c("Basic", "Stepwise"),
+  Training_Accuracy = c(acc1, acc2),
+  CV_Accuracy = c(cv_model_basic$results$Accuracy, cv_model_step$results$Accuracy)
+)
+
+accuracy[, sapply(accuracy, is.numeric)] <- 
+  lapply(accuracy[, sapply(accuracy, is.numeric)], round, digits = 3)
+
+kable(accuracy, caption = "Overfitting Accuracy Model Analysis")
+```
+
+```{r}
+kappa <- data.frame(
+  Model = c("Basic", "Stepwise"),
+  Training_Kappa = c(kappa1, kappa2),
+  CV_Kappa = c(cv_model_basic$results$Kappa, cv_model_step$results$Kappa)
+)
+
+kappa[, sapply(kappa, is.numeric)] <- 
+  lapply(kappa[, sapply(kappa, is.numeric)], round, digits = 3)
+
+kable(kappa, caption = "Overfitting Kappa Model Analysis")
+```
+
+For training accuracies and kappa readings there is a bigger dropoff for the basic model, indicating it is likely less generalisable than the stepwise.
+
+### Chi-Squared Testing
+```{r}
+basic_model_use <- anova(null_model, basic_model, test = "Chisq")
+stepwise_model_use <- anova(null_model, step_model, test = "Chisq")
+stepwise_model_value <- anova(step_model, basic_model, test = "Chisq")
+
+kable(basic_model_use, caption = "Null vs Basic")
+```
+
+```{r}
+kable(stepwise_model_use, caption = "Null vs Step")
+```
+
+```{r}
+kable(stepwise_model_value, caption = "Step vs Basic")
+```
+
+For chi-squared testing both models significantly improved the null model fit. Furthermore, the dropping of variables for the stepwise model did not lead to significant information loss.
+
+# Discussion
+Education type and sex both showed significance for predicting gun control confirming my hypothesis. Party was shown to be a useful predictor, where with Democrats as the reference, Independents were shown to be significant, but not Republicans, so I was correct about the general variable, not quite about the classes. These findings broadly align with theoretical expectations from before, whilst other variables went against these expectations and my hypothesis. 
+
+In terms of the models to predict gun-control support, both the basic and stepwise models performed significantly better than chance. The stepwise model is the better of the two however. The cross-validation revealed a better kappa value for the stepwise model at 0.24 compared to 0.21 showing slightly better classification performance on unseen data, it had a lower AIC, there was less bias and standard error in the bootstrapping process, and no evidence of overfitting. Furthermore, chi-squared testing revealed despite having less variables, the stepwise model fit the data just as well. 
+
+# Limitations
+One limitation of this research is its timeframe. Circumstances can change very quickly, and there have clearly been major changes since 2006. I've not been able to address it here as this was the only data available, however for future studies more recent data is suggested.
+
+Another limitation was the fact that my dependent variable didn't directly measure participants views on gun control, instead using factor analysis because there were no direct questions. Future studies should involve direct questions to gauge support.
+
+Furthermore, for firearm mortalities, I had to merge datasets based on region die to GCC privacy policy, collapsing state-wise information. Ideally, future studies have data on the state-wise level making for a fair assessment of this variable.
+
+While I've have suggested certain variables affect gun control here, ecological fallacy must be appropriately considered in interpretation. I've observed group-level patterns that don't necessarily determine individual attitudes.
+
+# Conclusion
+In this study, I explored the impact of various factors on gun-control support in the US, revealing significant correlations between variables sex, education level, and political parties and gun-control support. This research underscores the importance of considering why these perspectives exist, and future studies should build on this to foster understanding. On the individual level, research here can help Americans become more aware on the issue, and on the local/governmental level it can provide policy makers more insights to support their citizens.
+
+# References
+Barnett, R. C. (2004). Women and multiple roles: Myths and reality. Harvard review of psychiatry, 12(3), 158-164.
+
+Crifasi, C. K., Stone, E. M., McGinty, E. E., & Barry, C. L. (2021). Differences in Public Support for Gun Policies Between Women and Men. American journal of preventive medicine, 60(1), e9–e14. https://doi.org/10.1016/j.amepre.2020.06.028
+
+Kaplan, M. S., & Geling, O. (1998). Firearm suicides and homicides in the United States: regional variations and patterns of gun ownership. Social science & medicine, 46(9), 1227-1233.
+
+Kaufman, E. J., Song, J., Beard, J. H., Holena, D. N., & Morrison, C. N. (2024). Fatal and nonfatal firearm injury rates by race and ethnicity in the United States, 2019 to 2020. Annals of Internal Medicine, 177(5), 624–632. doi.org
+
+Keum, B. T., Wong, L., & Na, J. Y. (2025). Trauma, Depression, and Anxiety from Gun Violence Exposure on Social Media: Development of the Gun Violence on Social Media Scale, Journal of Aggression, Maltreatment & Trauma, 34(9), 1337-1360. DOI: 10.1080/10926771.2025.2548449
+
+Kruis, N. E., Wentling, R. L., Heirigs, M. H., & Ishoy, G. A. (2020). Assessing the impact of knowledge and location on college students' perceptions of gun control and campus carry policies: A multisite comparison. American Journal of Criminal Justice, 45(1), 25-47.
+
+Long, L. G. (2022). Guns and the African American Community. Guns 360: Differing Perspectives and Common-Sense Approaches to Firearms in America, 195.
+
+Pew Research Center. (2016, April 26). Ideological Gap Widens Between More, Less Educated Adults. Pew Research Center - U.S. Politics & Policy; Pew Research Center. https://www.pewresearch.org/politics/2016/04/26/a-wider-ideological-gap-between-more-and-less-educated-adults/
+
+Pew Research Center. (2024, November 13). Social Media Fact Sheet. Pew Research Center. https://www.pewresearch.org/internet/fact-sheet/social-media/
+
+Sheldon, K. M., & Nichols, C. P. (2009). Comparing Democrats and Republicans on Intrinsic and Extrinsic Values. Journal of Applied Social Psychology, 39, 589-623. https://doi.org/10.1111/j.1559-1816.2009.00452.x
+
+Waytz, A., Iyer, R., Young, L., Haidt, J., & Graham, J. (2019). Ideological differences in the expanse of the moral circle. Nature communications, 10(1), 4389. https://doi.org/10.1038/s41467-019-12227-0
+
+# AI Acknowledgement
+AI tools were used in an assistive capacity throughout this project. CoPilot was consulted at various stages to clarify uncertainties, particularly around R coding challenges such as bootstrap table formatting, plot visibility, removing ghost rectangles in ggplot, handling NA values, fixing row mismatches, and hiding code in R Markdown PDFs. CoPilot also provided suggestions on statistical and methodological questions such as choosing logistic regression, assessing assumptions, and coding party as a numeric variable. In all cases, suggestions were evaluated critically by the author before being adopted or adapted. CoPilot was also used directly in the code for the package installation function, as noted inline in the script. It was also used to ensure my project aligned with the rubric, suggesting potential areas to improve, and I improved them.
+
+Claude (Anthropic) was used as a sounding board for sense-checking statistical methodology, particularly around logistic regression assumption checks and interpretation of results such as residual plots. It also assisted with minor write-up refinements such as tightening phrasing and alphabetically ordering references.
+
+All statistical decisions, interpretations, and conclusions remained the author's own throughout. These two AI acknowledgement paragraphs were provided by Claude, and all report writing and coding was completed by me independently.
+
+# Appendix
+## Questions Used for GSS Survey
+Gun Control Variables (all asked 2006):
+
+GUNLAW — "Would you favor or oppose a law which would require a person to obtain a police permit before he or she could buy a gun?"
+HGUNLAW — "Do you favor or oppose a law which would require a person to obtain a police permit before he or she could buy a handgun?"
+GUNS911 — "As a result of the September 11th attacks, do you think gun control laws in this country should be made more strict, less strict, or kept about the same?"
+GUNSALES — "Do you think the number of places where people can legally buy guns should be increased, decreased, or kept about the same?"
+GUNSDRUG — "Do you think the penalty for illegally carrying a gun should be increased, kept about the same, or decreased for someone convicted of a drug offense?"
+GUNSDRNK — "In all states it is illegal to drive while under the influence of alcohol. Would you favor or oppose state laws making it illegal to carry a firearm while under the influence of alcohol?"
+SEMIGUNS — "Do you favor or oppose a law which would ban the manufacture, sale, and possession of semi-automatic guns?"
+RIFLES50 — "Do you favor or oppose a law which would ban the manufacture, sale, and possession of rifles that can fire more than 50 rounds?"
+
+Demographic Variables:
+
+PARTYID — "Generally speaking, do you usually think of yourself as a Republican, Democrat, Independent, or what?" (0–6 scale from Strong Democrat to Strong Republican)
+SEX — Interviewer-recorded: Male/Female
+AGE — "How old were you on your last birthday?"
+RACE — "What race do you consider yourself?" (White/Black/Other)
+REG16 — "In what region of the United States were you living when you were 16 years old?"
+DEGREE — "What is the highest grade in elementary school or high school that you finished and got credit for?" / highest degree received (0–4 scale)
